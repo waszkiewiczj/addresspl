@@ -5,8 +5,8 @@ class InputCleaner:
     def cleanInput(self, inputStr):
         cleaned = inputStr.lower()
         cleaned = cleaned.strip()
-        cleaned = self.removePolishLetters(inputStr)
-        cleaned = self.replaceAddressTypesToShortcuts(inputStr)
+        cleaned = self.removePolishLetters(cleaned)
+        cleaned = self.replaceAddressTypesToShortcuts(cleaned)
         cleaned = re.sub(r"\s+", "", cleaned)
         cleaned = cleaned.replace(",", "")
 

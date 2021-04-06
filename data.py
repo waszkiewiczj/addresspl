@@ -4,8 +4,8 @@ import numpy as np
 import re
 
 #%%
-simc = pd.read_csv("data\\SIMC_Urzedowy_2021-04-06.csv", delimiter=";")
-ulic = pd.read_csv("data\\ULIC_Adresowy_2021-04-06.csv", delimiter=";")
+simc = pd.read_csv("data/SIMC_Urzedowy_2021-04-06.csv", delimiter=";")
+ulic = pd.read_csv("data/ULIC_Adresowy_2021-04-06.csv", delimiter=";")
 
 df_outer = ulic.merge(simc, left_on='SYM', right_on='SYM')
 df_outer = df_outer[["NAZWA", "CECHA","NAZWA_1","NAZWA_2"]]

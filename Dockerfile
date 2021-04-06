@@ -8,9 +8,11 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt --no-cache-dir
 
-RUN python data.py && python build_annoy.py --csv-path data/db.csv --col-name STRING --out data/tree.ann
-
 COPY . .
+
+ENV PYTHONPATH=/app
+
+RUN python data.py && python build_annoy.py --csv-path data/db.csv --col-name STRING --out data/tree.ann
 
 EXPOSE 80
 

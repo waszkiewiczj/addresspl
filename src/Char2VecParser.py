@@ -1,3 +1,8 @@
+import chars2vec as c2v
+
+from typing import List
+
+
 class Char2VecParser:
     def __init__(self):
         self.model = c2v.load_model('eng_100')

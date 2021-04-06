@@ -16,27 +16,25 @@ Options:
 """
 
 import pandas as pd
-import chars2vec as c2v
 
 from docopt import docopt
 from annoy import AnnoyIndex
-from typing import List
-
-
-class Char2VecParser:
-    def __init__(self):
-        self.model = c2v.load_model('eng_100')
-
-    def vectorize(self, words: List[str]) -> List:
-        return self.model.vectorize_words(words)
+from src.Char2VecParser import Char2VecParser
 
 
 def build_annoy(csv_path: str, column_name: str, out_path: str):
-    data = pd.read_csv(csv_path)
-    str_data = data[column_name].tolist()
-    embeddings = Char2VecParser().vectorize(str_data)
-    count = len(embeddings)
-    annoy_idx = AnnoyIndex(count, 'angular')
+    data = pd.read_csv(csv_path).iloc[:100, :]
+    word_data = data[column_name].tolist()
+    count = len(word_data)
+
+    parser = Char2VecParser()
+    embeddings = []
+    for idx, word in enumerate(word_data):
+        print(f"vectorizing {idx + 1}/{count} row")
+        emb = parser.vectorize([word])[0]
+        embeddings.append(emb)
+
+    annoy_idx = AnnoyIndex(100, 'angular')
     for idx, embedding in enumerate(embeddings):
         print(f"adding {idx + 1}/{count} to ANNOY")
         annoy_idx.add_item(idx, embedding)

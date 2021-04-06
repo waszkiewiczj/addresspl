@@ -1,5 +1,5 @@
+*.ann
 .idea
-
 Dockerfile
 
 # Byte-compiled / optimized / DLL files

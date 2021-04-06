@@ -23,7 +23,7 @@ from src.Char2VecParser import Char2VecParser
 
 
 def build_annoy(csv_path: str, column_name: str, out_path: str):
-    data = pd.read_csv(csv_path)
+    data = pd.read_csv(csv_path).iloc[:100, :]
     word_data = data[column_name].tolist()
     count = len(word_data)
 

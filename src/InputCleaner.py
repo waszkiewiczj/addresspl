@@ -1,9 +1,14 @@
+import re
+
+
 class InputCleaner:
     def cleanInput(self, inputStr):
         cleaned = inputStr.lower()
         cleaned = cleaned.strip()
         cleaned = self.removePolishLetters(inputStr)
         cleaned = self.replaceAddressTypesToShortcuts(inputStr)
+        cleaned = re.sub(r"\s+", "", cleaned)
+        cleaned = cleaned.replace(",", "")
 
         return cleaned
 

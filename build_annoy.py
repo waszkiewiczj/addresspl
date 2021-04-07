@@ -16,36 +16,27 @@ Options:
 """
 
 import pandas as pd
+import logging
+import sys
 
 from docopt import docopt
-from annoy import AnnoyIndex
-from src.Char2VecParser import Char2VecParser
+from src.c2v_parser import Chars2VecParser
+from src.annoy_builder import AnnoyBuilder
 
 
-def build_annoy(csv_path: str, column_name: str, out_path: str):
-    data = pd.read_csv(csv_path)
-    word_data = data[column_name].tolist()
-    count = len(word_data)
-
-    parser = Char2VecParser()
-    embeddings = []
-    for idx, word in enumerate(word_data):
-        print(f"vectorizing {idx + 1}/{count} row")
-        emb = parser.vectorize([word])[0]
-        embeddings.append(emb)
-
-    annoy_idx = AnnoyIndex(100, 'angular')
-    for idx, embedding in enumerate(embeddings):
-        print(f"adding {idx + 1}/{count} to ANNOY")
-        annoy_idx.add_item(idx, embedding)
-    annoy_idx.build(20)
-    annoy_idx.save(out_path)
+def main(csv_path: str, column_name: str, out_path: str):
+    parser = Chars2VecParser()
+    data = pd.read_csv(csv_path, encoding="UTF-8")
+    builder = AnnoyBuilder(data, column_name, parser)
+    tree = builder.build_tree()
+    builder.export_tree(out_path, tree)
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
     arguments = docopt(__doc__)
-    build_annoy(
-        csv_path=arguments['--csv-path'],
-        column_name=arguments['--col-name'],
-        out_path=arguments['--out']
+    main(
+        csv_path=arguments["--csv-path"],
+        column_name=arguments["--col-name"],
+        out_path=arguments["--out"]
     )

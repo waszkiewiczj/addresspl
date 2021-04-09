@@ -37,17 +37,16 @@ def main(simc_csv: str, ulic_csv: str, out_path: str):
     ]
     concat_series = pd.Series()
 
-    result_df = merged_df
+    result_df = pd.DataFrame()
     for combination in concat_combinations:
         concat_series_tmp = merged_df[combination[0]].map(str)
         for combination_el in combination[1:]:
             concat_series_tmp = concat_series_tmp + merged_df[combination_el].map(str)
         concat_series = concat_series.append(concat_series_tmp)
-        merged_df = result_df.append(merged_df)
+        result_df = result_df.append(merged_df)
 
     concat_series = concat_series.apply(cleaner.clean_input)
 
-    result_df = merged_df.append(merged_df)
     result_df["STRING"] = concat_series
     result_df.to_csv(out_path, index=False)
 

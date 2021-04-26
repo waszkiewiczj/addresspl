@@ -3,13 +3,19 @@ Run Flask web application server
 
 Usage:
     app.py --tree TREE \
-    --data DATA
+    --data DATA \
+    [--model-path MODEL_PATH] \
+    [--dim DIMENSION]
 
 Options:
     --tree TREE
     Path to annoy tree file
     --data DATA
     Path to data CSV file
+    --model-path MODEL_PATH
+    Path to custom c2v model
+    --dim DIMENSION
+    Number of dimension for output embeddings [default: 100]
 """
 import json
 import pandas as pd
@@ -26,7 +32,7 @@ from src.input_cleaner import InputCleaner
 if __name__ == '__main__':
     arguments = docopt(__doc__)
 
-    parser = Chars2VecParser()
+    parser = Chars2VecParser(model_path=arguments["--model-path"], embedding_size=int(arguments["--dim"]))
     data = pd.read_csv(arguments["--data"])
     cleaner = InputCleaner()
     tree = AnnoyIndex(parser.embedding_size, 'angular')

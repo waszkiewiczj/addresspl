@@ -5,10 +5,9 @@ from typing import List
 
 
 class Chars2VecParser:
-    def __init__(self, embedding_size: int = 100):
-        assert embedding_size in (50, 100, 150, 300), "not supported embedding size"
+    def __init__(self, embedding_size: int, model_path: str = None):
         self.embedding_size = embedding_size
-        self.model = c2v.load_model(f"eng_{self.embedding_size}")
+        self.model = c2v.load_model(model_path if model_path else f"eng_{self.embedding_size}")
         self.logger = logging.getLogger("Chars2VecParser")
 
     def parse(self, words: List[str], batch_size: int = None) -> List:

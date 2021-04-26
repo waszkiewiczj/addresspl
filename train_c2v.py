@@ -12,7 +12,7 @@ Options:
     --out-model OUT_MODEL
     Path to save output model
     --dim DIMENSION
-    Number of dimension for output embeddings [default: 50]
+    Number of dimension for output embeddings [default: 100]
 """
 
 import logging

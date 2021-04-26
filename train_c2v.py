@@ -26,8 +26,8 @@ from docopt import docopt
 def main(csv_path: str, out_model: str, dim: int):
     data = pd.read_csv(csv_path)
 
-    X_train = data.loc[:, ["x1", "x2"]].to_numpy().tolist()
-    y_train = data["y"].tolist()
+    X_train = data.loc[:, ["x1", "x2"]].to_numpy()
+    y_train = data.loc[:, "y"].to_numpy()
 
     model_chars = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.',
                    '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', ';', '<',

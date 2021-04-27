@@ -62,11 +62,17 @@ def best_city(address, cities):
 def best_city(address, cities):
     best_r = -1
     best_c = ''
+    best_inx = -1
     for city in cities:
         if city in address:
             best_r = 1
-            if len(best_c) < len(city):
+            inx = address.index(city)
+            if inx > best_inx:
                 best_c = city
+                best_inx = inx
+            if inx == best_inx and len(best_c) < len(city):
+                best_c = city
+                best_inx = inx
             
     if best_r == 1:
         return best_c, best_r
@@ -82,7 +88,6 @@ def best_city(address, cities):
     return best_c, best_r
 
 
-
 def address_parser(ad):
     city, ratio  = best_city(ad, cities)
     citystreets = merged_df[(merged_df['NAZWA']==city)]['ULICA']
@@ -91,6 +96,7 @@ def address_parser(ad):
     a = ad.replace(city, "")
     a = a.replace(postal_code, "")
     building = get_building(a)
+    print("")
     print(f"### {ad} ###")
     print(f'miasto: {city}')
     print(f'budynek: {building}')
@@ -98,7 +104,7 @@ def address_parser(ad):
     print(f'kod pocztowy: {postal_code}')
 
 startTime = time.perf_counter()
-results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow[:5])
+results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow[:15])
 
 print(time.perf_counter() - startTime)
 

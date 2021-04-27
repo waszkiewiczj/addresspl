@@ -59,6 +59,29 @@ def best_city(address, cities):
             best_c = city
     return best_c, best_r
 
+def best_city(address, cities):
+    best_r = -1
+    best_c = ''
+    for city in cities:
+        if city in address:
+            best_r = 1
+            if len(best_c) < len(city):
+                best_c = city
+            
+    if best_r == 1:
+        return best_c, best_r
+
+    for city in cities:
+        r = fuzz.token_set_ratio(address, city) 
+        if r > best_r :
+            best_r = r
+            best_c = city
+        if r == 1 and len(best_c) < len(city):
+            best_r = r
+            best_c = city
+    return best_c, best_r
+
+
 
 def address_parser(ad):
     city, ratio  = best_city(ad, cities)
@@ -75,7 +98,7 @@ def address_parser(ad):
     print(f'kod pocztowy: {postal_code}')
 
 startTime = time.perf_counter()
-results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow[:2])
+results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow[:5])
 
 print(time.perf_counter() - startTime)
 

@@ -18,6 +18,14 @@ cities = cities_df['MIASTO'].tolist()
 df = pd.read_csv('data/db2.csv', encoding='UTF-8',header=None,  names=['Address'])
 db_ads = df['Address'].tolist()
 
+csv_reader_kwargs = dict(delimiter=";")
+simc_df = pd.read_csv('data/SIMC_Urzedowy_2021-04-06.csv', **csv_reader_kwargs)
+ulic_df = pd.read_csv('data/ULIC_Adresowy_2021-04-06.csv', **csv_reader_kwargs)
+
+merged_df = ulic_df.merge(simc_df, left_on='SYM', right_on='SYM')
+merged_df = merged_df[["NAZWA", "CECHA", "NAZWA_1", "NAZWA_2"]]
+merged_df = merged_df.fillna("")
+merged_df["ULICA"] = merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].map(str)
 
 def get_postal_code(inputStr):
     postalCodeRegex = r"\d{2}-?\d{3}"
@@ -54,6 +62,8 @@ def best_city(address, cities):
 
 def address_parser(ad):
     city, ratio  = best_city(ad, cities)
+    citystreets = merged_df[(merged_df['NAZWA']==city)]['ULICA']
+    street, ratio = best_city(ad, citystreets)
     postal_code = get_postal_code(ad)
     a = ad.replace(city, "")
     a = a.replace(postal_code, "")
@@ -61,7 +71,7 @@ def address_parser(ad):
     print(f"### {ad} ###")
     print(f'miasto: {city}')
     print(f'budynek: {building}')
-    print(f'ulica: {city}')
+    print(f'ulica: {street}')
     print(f'kod pocztowy: {postal_code}')
 
 startTime = time.perf_counter()

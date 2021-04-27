@@ -9,7 +9,7 @@ from joblib import Parallel, delayed
 
 # %%
 
-df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=None,  names=['Address'])
+df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=None,  names=['Address'], delimiter=";")
 adresy_dla_studentow = df_test['Address'].tolist()
 
 cities_df = pd.read_csv('data/cities.csv', encoding='UTF-8')
@@ -104,7 +104,7 @@ def address_parser(ad):
     print(f'kod pocztowy: {postal_code}')
 
 startTime = time.perf_counter()
-results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow[:15])
+results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow)
 
 print(time.perf_counter() - startTime)
 

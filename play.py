@@ -11,7 +11,7 @@ df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=
 adresy_dla_studentow = df_test['Address'].tolist()
 
 cities_df = pd.read_csv('data/cities.csv', encoding='UTF-8')
-cities = df['MIASTO'].tolist()
+cities = cities_df['MIASTO'].tolist()
 
 df = pd.read_csv('data/db2.csv', encoding='UTF-8',header=None,  names=['Address'])
 db_ads = df['Address'].tolist()
@@ -29,17 +29,18 @@ def get_postal_code(inputStr):
 def best_city(address, cities):
     best_r = -1
     best_c = ''
-    for city in cities:
-        r = fuzz.token_set_ratio(inp, row -100) 
+    l = len(cities)
+    for i, city in enumerate(cities):
+        r = fuzz.token_set_ratio(address, city) 
         if r > best_r:
             best_r = r
             best_c = city
-        if index % 1000==0:
-            print(index/df.size)
+        if i % 1000==0:
+            print(i/l)
     return best_c, best_r
 
 for ads in adresy_dla_studentow[:2]:
-    city, ratio  = best_city(inp, cities)
+    city, ratio  = best_city(ads, cities)
     postal_code = get_postal_code(ads)
     print(f"### {ads} ###")
     print(f'miasto: {city}')

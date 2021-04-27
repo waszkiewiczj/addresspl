@@ -8,13 +8,13 @@ import re
 # %%
 
 df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=None,  names=['Address'])
-adresy_dla_studentow = df_test['Address'].toList()
+adresy_dla_studentow = df_test['Address'].tolist()
 
 cities_df = pd.read_csv('data/cities.csv', encoding='UTF-8')
-cities = df['MIASTO'].toList()
+cities = df['MIASTO'].tolist()
 
 df = pd.read_csv('data/db2.csv', encoding='UTF-8',header=None,  names=['Address'])
-db_ads = df['Address'].toList()
+db_ads = df['Address'].tolist()
 
 
 def get_postal_code(inputStr):
@@ -43,8 +43,8 @@ for ads in adresy_dla_studentow[:2]:
     postal_code = get_postal_code(ads)
     print(f"### {ads} ###")
     print(f'miasto: {city}')
-    print(f'ulica: {}')
-    print(f'kod pocztowy: {}')
+    print(f'ulica: {city}')
+    print(f'kod pocztowy: {postal_code}')
 
 # for index, row in df.iterrows():
 

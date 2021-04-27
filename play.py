@@ -18,13 +18,13 @@ db_ads = df['Address'].tolist()
 
 
 def get_postal_code(inputStr):
-        postalCodeRegex = r"\d{2}-?\d{3}"
-        postalCode = None
-        match = re.search(postalCodeRegex, inputStr)
-        if match is not None:
-            postalCode = match.group()
+    postalCodeRegex = r"\d{2}-?\d{3}"
+    postalCode = None
+    match = re.search(postalCodeRegex, inputStr)
+    if match is not None:
+        postalCode = match.group()
 
-        return postalCode
+    return postalCode
 
 def best_city(address, cities):
     best_r = -1

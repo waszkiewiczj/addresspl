@@ -37,7 +37,7 @@ def get_postal_code(inputStr):
     return postalCode
 
 def get_building(inputStr):
-    buildingRegex = r"\d+\w{0,3}\/{0,1}\d+\w{0,3}"
+    buildingRegex = r"\d+\w{0,3}\/{0,1}\d*\w{0,3}"
     building = "Not found"
     match = re.search(buildingRegex, inputStr)
     if match is not None:

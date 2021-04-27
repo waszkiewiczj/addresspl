@@ -29,7 +29,7 @@ merged_df["ULICA"] = merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].
 
 def get_postal_code(inputStr):
     postalCodeRegex = r"\d{2}-?\d{3}"
-    postalCode = None
+    postalCode = "Not found"
     match = re.search(postalCodeRegex, inputStr)
     if match is not None:
         postalCode = match.group()
@@ -38,7 +38,7 @@ def get_postal_code(inputStr):
 
 def get_building(inputStr):
     buildingRegex = r"\d+\w{0,3}\/{0,1}\d+\w{0,3}"
-    building = None
+    building = "Not found"
     match = re.search(buildingRegex, inputStr)
     if match is not None:
         building = match.group()

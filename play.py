@@ -4,6 +4,8 @@ from fuzzywuzzy import fuzz, process
 
 import pandas as pd
 import re
+import time
+from joblib import Parallel, delayed
 
 # %%
 
@@ -26,45 +28,46 @@ def get_postal_code(inputStr):
 
     return postalCode
 
+def get_building(inputStr):
+    buildingRegex = r"\d+\w{0,3}\/{0,1}\d+\w{0,3}"
+    building = None
+    match = re.search(buildingRegex, inputStr)
+    if match is not None:
+        building = match.group()
+
+    return building
+
 def best_city(address, cities):
     best_r = -1
     best_c = ''
     l = len(cities)
     for i, city in enumerate(cities):
         r = fuzz.token_set_ratio(address, city) 
-        if r > best_r:
+        if r > best_r :
             best_r = r
             best_c = city
-        if i % 1000==0:
-            print(i/l)
+        if r == 1 and len(best_c) < len(city):
+            best_r = r
+            best_c = city
     return best_c, best_r
 
-for ads in adresy_dla_studentow[:2]:
-    city, ratio  = best_city(ads, cities)
-    postal_code = get_postal_code(ads)
-    print(f"### {ads} ###")
+
+def address_parser(ad):
+    city, ratio  = best_city(ad, cities)
+    postal_code = get_postal_code(ad)
+    a = ad.replace(city, "")
+    a = a.replace(postal_code, "")
+    building = get_building(a)
+    print(f"### {ad} ###")
     print(f'miasto: {city}')
+    print(f'budynek: {building}')
     print(f'ulica: {city}')
     print(f'kod pocztowy: {postal_code}')
 
-# for index, row in df.iterrows():
+startTime = time.perf_counter()
+results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow[:2])
 
-#     r = fuzz.token_set_ratio(inp, row -100)
-#     if r > best_r:
-#         best_r = r
-#         best_a = row['colA']
-
-#     if index % 1000==0:
-
-#         print(index/df.size)
-
-
-Ratios = process.extract(inp, db_ads, limit=5)
-
-print(Ratios)
-
-print(best_r)
-print(best_a)
+print(time.perf_counter() - startTime)
 
 # %%
 

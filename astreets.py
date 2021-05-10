@@ -1,3 +1,5 @@
+from fuzzywuzzy import fuzz, process
+
 def get_streets(address:str, streets, n:int=5):
     scores = get_scores(address, streets)
 

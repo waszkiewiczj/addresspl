@@ -3,4 +3,4 @@ from models import City
 
 
 def get_cities(ad)-> List[City]:
-    return ["warszawa"]
+    return ["Warszawa"]

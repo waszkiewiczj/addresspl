@@ -121,6 +121,7 @@ def address_parser(ad:str)->List[Address]:
         city_records = to_records(ad, c, streets, postal_code, building)
         records.extend(city_records)
 
+    records = validate_postal_code(records)
     return records
     # record = [{
     #     postal_code:"00-000",

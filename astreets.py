@@ -1,9 +1,8 @@
-def get_streets(adress:str, streets:str):
-    N = 5 # TODO: Fix n
+def get_streets(adress:str, streets:str, n:int=5):
     scores = get_scores(address, streets)
 
     sorted_scores = sort_scores(scores)
-    return sorted_scores[:N]
+    return sorted_scores[:n]
 
 def get_scores(address, streets):
     scores = []

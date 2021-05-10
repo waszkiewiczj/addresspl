@@ -7,6 +7,14 @@ import re
 import time
 from joblib import Parallel, delayed
 
+from acities import get_cities
+from astreets import get_streets
+from atorecords import to_records
+
+from typing import List
+from models import Address
+
+
 # %%
 
 df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=None,  names=['Address'], delimiter=";")
@@ -88,20 +96,52 @@ def best_city(address, cities):
     return best_c, best_r
 
 
-def address_parser(ad):
-    city, ratio  = best_city(ad, cities)
-    citystreets = merged_df[(merged_df['NAZWA']==city)]['ULICA']
-    street, ratio = best_city(ad, citystreets)
+def address_parser(ad:str)->List[Address]:
+    # city, ratio  = best_city(ad, cities)
+    # citystreets = merged_df[(merged_df['NAZWA']==city)]['ULICA']
+    # street, ratio = best_city(ad, citystreets)
+    # postal_code = get_postal_code(ad)
+    # a = ad.replace(city, "")
+    # a = a.replace(postal_code, "")
+    # building = get_building(a)
+    # print("")
+    # print(f"### {ad} ###")
+    # print(f'miasto: {city}')
+    # print(f'budynek: {building}')
+    # print(f'ulica: {street}')
+    # print(f'kod pocztowy: {postal_code}')
+
     postal_code = get_postal_code(ad)
-    a = ad.replace(city, "")
-    a = a.replace(postal_code, "")
-    building = get_building(a)
-    print("")
-    print(f"### {ad} ###")
-    print(f'miasto: {city}')
-    print(f'budynek: {building}')
-    print(f'ulica: {street}')
-    print(f'kod pocztowy: {postal_code}')
+    building = get_building(ad)
+
+    cities = get_cities(ad)
+    records = []
+    for c in cities:
+        streets = get_streets(ad, c)
+        city_records = to_records(ad, c, streets, postal_code, building)
+        records.extend(city_records)
+
+    return records
+    # record = [{
+    #     postal_code:"00-000",
+    #     street:"Madalinskiego",
+    #     building_number: 5,
+    #     city: "Warszawa",
+    #     score: 0.76,
+    #     errors:[
+    #         'wrong postal code'
+    #     ]
+    # },
+    # {
+    #     postal_code:"00-000",
+    #     street:"Madalinskich",
+    #     building_number: 5,
+    #     city: "Warszawa",
+    #     score: 0.60,
+    #     errors:[
+    #         'wrong postal code'
+    #     ]
+    # }]
 
 startTime = time.perf_counter()
 results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow)

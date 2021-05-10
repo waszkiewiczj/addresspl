@@ -57,20 +57,6 @@ def get_building(inputStr):
 def best_city(address, cities):
     best_r = -1
     best_c = ''
-    l = len(cities)
-    for i, city in enumerate(cities):
-        r = fuzz.token_set_ratio(address, city) 
-        if r > best_r :
-            best_r = r
-            best_c = city
-        if r == 1 and len(best_c) < len(city):
-            best_r = r
-            best_c = city
-    return best_c, best_r
-
-def best_city(address, cities):
-    best_r = -1
-    best_c = ''
     best_inx = -1
     for city in cities:
         if city in address:
@@ -118,7 +104,8 @@ def address_parser(ad:str)->List[Address]:
     cities = get_cities(ad)
     records = []
     for c in cities:
-        streets = get_streets(ad, c)
+        citystreets = merged_df[(merged_df['NAZWA']==c)]['ULICA']
+        streets = get_streets(ad, citystreets)
         city_records = to_records(ad, c, streets, postal_code, building)
         records.extend(city_records)
 

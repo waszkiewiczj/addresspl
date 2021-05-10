@@ -14,7 +14,7 @@ def get_scores(address, streets):
             scores.append({'score': 1, 'name': street})
             continue
 
-        r = fuzz.token_set_ratio(address, street) 
+        r = fuzz.token_set_ratio(address, street) / 100
         scores.append({'score': r, 'name': street})
     return scores
 

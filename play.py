@@ -1,5 +1,4 @@
 #%%
-
 from fuzzywuzzy import fuzz, process
 
 import pandas as pd
@@ -22,7 +21,7 @@ df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=
 adresy_dla_studentow = df_test['Address'].tolist()
 
 cities_df = pd.read_csv('data/cities.csv', encoding='UTF-8')
-cities = cities_df['MIASTO'].tolist()
+cities_list = cities_df['MIASTO'].tolist()
 
 df = pd.read_csv('data/db2.csv', encoding='UTF-8',header=None,  names=['Address'])
 db_ads = df['Address'].tolist()
@@ -54,59 +53,16 @@ def get_building(inputStr):
 
     return building
 
-def best_city(address, cities):
-    best_r = -1
-    best_c = ''
-    best_inx = -1
-    for city in cities:
-        if city in address:
-            best_r = 1
-            inx = address.index(city)
-            if inx > best_inx:
-                best_c = city
-                best_inx = inx
-            if inx == best_inx and len(best_c) < len(city):
-                best_c = city
-                best_inx = inx
-            
-    if best_r == 1:
-        return best_c, best_r
-
-    for city in cities:
-        r = fuzz.token_set_ratio(address, city) 
-        if r > best_r :
-            best_r = r
-            best_c = city
-        if r == 1 and len(best_c) < len(city):
-            best_r = r
-            best_c = city
-    return best_c, best_r
-
-
 def address_parser(ad:str)->List[Address]:
-    # city, ratio  = best_city(ad, cities)
-    # citystreets = merged_df[(merged_df['NAZWA']==city)]['ULICA']
-    # street, ratio = best_city(ad, citystreets)
-    # postal_code = get_postal_code(ad)
-    # a = ad.replace(city, "")
-    # a = a.replace(postal_code, "")
-    # building = get_building(a)
-    # print("")
-    # print(f"### {ad} ###")
-    # print(f'miasto: {city}')
-    # print(f'budynek: {building}')
-    # print(f'ulica: {street}')
-    # print(f'kod pocztowy: {postal_code}')
-
     postal_code = get_postal_code(ad)
     building = get_building(ad)
 
-    cities = get_cities(ad)
+    cities = get_cities(ad, cities_list)
     records = []
     for c in cities:
-        citystreets = merged_df[(merged_df['NAZWA']==c)]['ULICA']
+        citystreets = merged_df[(merged_df['NAZWA']==c.name)]['ULICA']
         streets = get_streets(ad, citystreets)
-        city_records = to_records(ad, c, streets, postal_code, building)
+        city_records = to_records(ad, c.name, streets, postal_code, building)
         records.extend(city_records)
 
     validator = PostalCodeValidator()

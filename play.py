@@ -10,6 +10,7 @@ from joblib import Parallel, delayed
 from acities import get_cities
 from astreets import get_streets
 from atorecords import to_records
+from validatepostalcode import validate_postal_code
 
 from typing import List
 from models import Address
@@ -123,29 +124,13 @@ def address_parser(ad:str)->List[Address]:
 
     records = validate_postal_code(records)
     return records
-    # record = [{
-    #     postal_code:"00-000",
-    #     street:"Madalinskiego",
-    #     building_number: 5,
-    #     city: "Warszawa",
-    #     score: 0.76,
-    #     errors:[
-    #         'wrong postal code'
-    #     ]
-    # },
-    # {
-    #     postal_code:"00-000",
-    #     street:"Madalinskich",
-    #     building_number: 5,
-    #     city: "Warszawa",
-    #     score: 0.60,
-    #     errors:[
-    #         'wrong postal code'
-    #     ]
-    # }]
 
 startTime = time.perf_counter()
-results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow)
+
+for i in adresy_dla_studentow:
+    address_parser(i)
+
+# results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow)
 
 print(time.perf_counter() - startTime)
 

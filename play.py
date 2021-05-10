@@ -10,7 +10,7 @@ from joblib import Parallel, delayed
 from acities import get_cities
 from astreets import get_streets
 from atorecords import to_records
-from validatepostalcode import validate_postal_code
+from validatepostalcode import PostalCodeValidator
 
 from typing import List
 from models import Address
@@ -122,7 +122,8 @@ def address_parser(ad:str)->List[Address]:
         city_records = to_records(ad, c, streets, postal_code, building)
         records.extend(city_records)
 
-    records = validate_postal_code(records)
+    validator = PostalCodeValidator()
+    records = validator.validate(records)
     return records
 
 startTime = time.perf_counter()

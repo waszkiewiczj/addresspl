@@ -3,10 +3,11 @@ import pandas as pd
 from typing import List
 from models import Address
 
-INVALID_POSTAL_ERROR = "postal code and city do not match"
 
 
 class PostalCodeValidator:
+    INVALID_POSTAL_ERROR = "postal code and city do not match"
+
     def __init__(
             self,
             postal_code_csv: str = "data/kody.csv",
@@ -19,22 +20,17 @@ class PostalCodeValidator:
 
     def is_valid(self, address: Address) -> bool:
         bool_df = (self.postal_code_df[self.city_column_name].str.lower() == address.city.lower()) & (
-                    self.postal_code_df[self.postal_code_column_name] == address.postal_code)
+                self.postal_code_df[self.postal_code_column_name] == address.postal_code)
         filtered_df = self.postal_code_df[bool_df]
 
         return len(filtered_df) > 0
 
+    def mark_invalid(self, address: Address) -> Address:
+        address.errors += [self.INVALID_POSTAL_ERROR]
 
-def validate_postal_code(records: List[Address]) -> List[Address]:
-    validator = PostalCodeValidator()
+        return address
 
-    validated = map(lambda address: _validate_single_postal_code(address, validator), records)
+    def validate(self, addresses: List[Address]):
+        validated = map(lambda address: address if self.is_valid(address) else self.mark_invalid(address), addresses)
 
-    return list(validated)
-
-
-def _validate_single_postal_code(address: Address, validator: PostalCodeValidator) -> Address:
-    if validator.is_valid(address):
-        address.errors += [INVALID_POSTAL_ERROR]
-
-    return address
+        return list(validated)

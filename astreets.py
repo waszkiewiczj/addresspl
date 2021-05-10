@@ -1,4 +1,4 @@
-def get_streets(adress:str, streets:str, n:int=5):
+def get_streets(address:str, streets, n:int=5):
     scores = get_scores(address, streets)
 
     sorted_scores = sort_scores(scores)
@@ -14,7 +14,7 @@ def get_scores(address, streets):
 
         r = fuzz.token_set_ratio(address, street) 
         scores.append({'score': r, 'name': street})
-    return best_c, best_r
+    return scores
 
 def sort_scores(scores):
     sortedLen = sorted(scores, key=lambda score: len(score['name']), reverse=True)

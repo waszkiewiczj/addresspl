@@ -67,7 +67,7 @@ def get_city_streets(city:str):
     else:
         return merged_df[(merged_df['NAZWA']==city)]['ULICA']
 
-def address_parser(ad:str)->List[Address]:
+def address_parser(ad:str) -> List[Address]:
     postal_code = get_postal_code(ad)
     ad_without_postal_code = ad.replace(postal_code, "")
     building = get_building(ad)
@@ -80,6 +80,8 @@ def address_parser(ad:str)->List[Address]:
         streets = get_streets(ad_without_city, citystreets)
         city_records = to_records(ad, c, streets, postal_code, building)
         records.extend(city_records)
+
+    records = sorted(records, key=lambda r: r.score, reverse=True)
 
     validator = PostalCodeValidator()
     records = validator.validate(records)
@@ -103,7 +105,7 @@ def address_parser(ad:str)->List[Address]:
 
 startTime = time.perf_counter()
 
-address_parser('al. Tysiąclecia 22, 26-110')
+address_parser('ulica Kościuszki 6 73-150 Łobez')
 
 for i in adresy_dla_studentow:
     address_parser(i)

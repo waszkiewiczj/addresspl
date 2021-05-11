@@ -55,14 +55,16 @@ def get_building(inputStr):
 
 def address_parser(ad:str)->List[Address]:
     postal_code = get_postal_code(ad)
+    ad_without_postal_code = ad.replace(postal_code, "")
     building = get_building(ad)
 
-    cities = get_cities(ad, cities_list)
+    cities = get_cities(ad_without_postal_code, cities_list)
     records = []
     for c in cities:
         citystreets = merged_df[(merged_df['NAZWA']==c.name)]['ULICA']
-        streets = get_streets(ad, citystreets)
-        city_records = to_records(ad, c.name, streets, postal_code, building)
+        ad_without_city = ad_without_postal_code.replace(c.name,"")
+        streets = get_streets(ad_without_city, citystreets)
+        city_records = to_records(ad, c, streets, postal_code, building)
         records.extend(city_records)
 
     validator = PostalCodeValidator()
@@ -72,16 +74,22 @@ def address_parser(ad:str)->List[Address]:
     for i, r in enumerate(records):
         if i < 3:
             err_msg = ''
-            if len(r.errors)>0:
-                err_msg = r.errors[0]
+            if r.is_postal_code_matching == False:
+                err_msg = 'Postal code doesnt match'
             
-            print(f"score: {r.score} - {r.street} {r.building_number} {r.postal_code} {r.city}. errors: {err_msg}")
+            pc = r.postal_code
+            if r.postal_code == 'Not found':
+                pc = ""
+            
+            print(f"score: {r.score} - {r.street} {r.building_number} {pc} {r.city}. errors: {err_msg}")
         else:
             break
     print("")
     return records
 
 startTime = time.perf_counter()
+
+address_parser('al. Tysiąclecia 22, 26-110')
 
 for i in adresy_dla_studentow:
     address_parser(i)
@@ -91,4 +99,7 @@ for i in adresy_dla_studentow:
 print(time.perf_counter() - startTime)
 
 # %%
+
+
+
 

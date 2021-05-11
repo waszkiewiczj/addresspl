@@ -67,6 +67,18 @@ def address_parser(ad:str)->List[Address]:
 
     validator = PostalCodeValidator()
     records = validator.validate(records)
+    print("#####")
+    print(ad)
+    for i, r in enumerate(records):
+        if i < 3:
+            err_msg = ''
+            if len(r.errors)>0:
+                err_msg = r.errors[0]
+            
+            print(f"score: {r.score} - {r.street} {r.building_number} {r.postal_code} {r.city}. errors: {err_msg}")
+        else:
+            break
+    print("")
     return records
 
 startTime = time.perf_counter()

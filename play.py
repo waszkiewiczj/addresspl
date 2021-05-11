@@ -45,7 +45,7 @@ def get_postal_code(inputStr):
     return postalCode
 
 def get_building(inputStr):
-    buildingRegex = r"\s(\d+\w?)(([\s\\\/-]|\s*lok.\s*)\d+)?"
+    buildingRegex = r"\s(?:\d+\w?)(?:(?:[\s\\\/-]|\s*lok.\s*)\d+)?"
     building = "Not found"
     match = re.findall(buildingRegex, inputStr)
     if len(match) > 0:

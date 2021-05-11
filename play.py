@@ -55,7 +55,7 @@ def get_building(inputStr):
 
 def get_city_streets(city:str):
     if "Warszawa" in city:
-        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]
+        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]['ULICA']
     elif "Łódź" in city:
         return merged_df[((merged_df['WOJ_x']==10) & (merged_df['POW_x']==61) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
     elif "Kraków" in city:
@@ -76,6 +76,9 @@ def address_parser(ad:str)->List[Address]:
     records = []
     for c in cities:
         citystreets = get_city_streets(c.name)
+        if len(citystreets) == 0:
+            citystreets = [str(c.name)]
+
         ad_without_city = ad_without_postal_code.replace(c.name,"")
         streets = get_streets(ad_without_city, citystreets)
         city_records = to_records(ad, c, streets, postal_code, building)

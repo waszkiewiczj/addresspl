@@ -7,8 +7,10 @@ def to_records(address, city, streets, postal_code, building_number):
         street = street_obj["name"]
         a = Address(postal_code, street, building_number, city, 0, [])
         pred_address = f'{street} {building_number} {postal_code} {city}'
-        score = fuzz.token_set_ratio(address, pred_address)
+        score = fuzz.token_set_ratio(address, pred_address)/100
         a.score = score
         records.append(a)
+    
+    records = sorted(records, key=lambda r: r.score, reverse=True)
 
     return records

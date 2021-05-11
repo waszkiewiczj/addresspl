@@ -31,7 +31,7 @@ simc_df = pd.read_csv('data/SIMC_Urzedowy_2021-04-06.csv', **csv_reader_kwargs)
 ulic_df = pd.read_csv('data/ULIC_Adresowy_2021-04-06.csv', **csv_reader_kwargs)
 
 merged_df = ulic_df.merge(simc_df, left_on='SYM', right_on='SYM')
-merged_df = merged_df[["NAZWA", "CECHA", "NAZWA_1", "NAZWA_2"]]
+merged_df = merged_df[["NAZWA", "CECHA", "NAZWA_1", "NAZWA_2", "WOJ_x","POW_x","GMI_x","RODZ_GMI_x"]]
 merged_df = merged_df.fillna("")
 merged_df["ULICA"] = merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].map(str)
 
@@ -53,6 +53,20 @@ def get_building(inputStr):
 
     return building
 
+def get_city_streets(city:str):
+    if "Warszawa" in city:
+        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]
+    elif "Łódź" in city:
+        return merged_df[((merged_df['WOJ_x']==10) & (merged_df['POW_x']==61) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
+    elif "Kraków" in city:
+        return merged_df[((merged_df['WOJ_x']==12) & (merged_df['POW_x']==61) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
+    elif "Poznań" in city:
+        return merged_df[((merged_df['WOJ_x']==30) & (merged_df['POW_x']==64) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
+    elif "Wrocław" in city:
+        return merged_df[((merged_df['WOJ_x']==2) & (merged_df['POW_x']==64) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
+    else:
+        return merged_df[(merged_df['NAZWA']==city)]['ULICA']
+
 def address_parser(ad:str)->List[Address]:
     postal_code = get_postal_code(ad)
     ad_without_postal_code = ad.replace(postal_code, "")
@@ -61,7 +75,7 @@ def address_parser(ad:str)->List[Address]:
     cities = get_cities(ad_without_postal_code, cities_list)
     records = []
     for c in cities:
-        citystreets = merged_df[(merged_df['NAZWA']==c.name)]['ULICA']
+        citystreets = get_city_streets(c.name)
         ad_without_city = ad_without_postal_code.replace(c.name,"")
         streets = get_streets(ad_without_city, citystreets)
         city_records = to_records(ad, c, streets, postal_code, building)

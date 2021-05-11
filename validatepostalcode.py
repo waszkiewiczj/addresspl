@@ -25,12 +25,12 @@ class PostalCodeValidator:
 
         return len(filtered_df) > 0
 
-    def mark_invalid(self, address: Address) -> Address:
-        address.errors += [self.INVALID_POSTAL_ERROR]
+    def validate_single(self, address: Address) -> Address:
+        address.is_postal_code_matching = self.is_valid(address)
 
         return address
 
     def validate(self, addresses: List[Address]):
-        validated = map(lambda address: address if self.is_valid(address) else self.mark_invalid(address), addresses)
+        validated = map(self.validate_single, addresses)
 
         return list(validated)

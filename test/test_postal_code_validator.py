@@ -22,7 +22,7 @@ class TestPostalCodeValidator:
     ])
     def test_valid_code(self, city, postal_code):
         validator = get_validator()
-        valid_address = Address(postal_code, "StreetName", "1", city, 1, [])
+        valid_address = Address(postal_code, "StreetName", "1", city, 1)
 
         is_valid = validator.is_valid(valid_address)
 
@@ -36,8 +36,31 @@ class TestPostalCodeValidator:
     ])
     def test_invalid_code(self, city, postal_code):
         validator = get_validator()
-        invalid_address = Address("00-007", "StreetName", "1", "City7", 1, [])
+        invalid_address = Address(postal_code, "StreetName", "1", city, 1)
 
         is_valid = validator.is_valid(invalid_address)
 
         assert not is_valid
+
+    @pytest.mark.parametrize("city,postal_code,is_valid", [
+        ["City1", "00-001", True],
+        ["City7", "00-001", False],
+    ])
+    def test_validate_single(self, city, postal_code, is_valid):
+        validator = get_validator()
+        address = Address(postal_code, "StreetName", "1", city, 1)
+
+        validated_address = validator.validate_single(address)
+
+        assert validated_address.is_postal_code_matching == is_valid
+
+    def test_validate(self):
+        validator = get_validator()
+        valid_address = Address("00-001", "StreetName", "1", "City1", 1)
+        invalid_address = Address("00-007", "StreetName", "1", "City1", 1)
+        addresses = [valid_address, invalid_address]
+
+        validated_addresses = validator.validate(addresses)
+
+        assert validated_addresses[0].is_postal_code_matching
+        assert not validated_addresses[1].is_postal_code_matching

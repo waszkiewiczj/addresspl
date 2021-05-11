@@ -1,6 +1,7 @@
 from typing import List
 from dataclasses import dataclass
 
+
 @dataclass
 class Address: 
     postal_code: str
@@ -8,7 +9,8 @@ class Address:
     building_number: str
     city: str
     score: float
-    errors: List[str]
+    is_postal_code_matching: bool = True
+
 
 @dataclass
 class City: 

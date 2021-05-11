@@ -33,7 +33,7 @@ ulic_df = pd.read_csv('data/ULIC_Adresowy_2021-04-06.csv', **csv_reader_kwargs)
 merged_df = ulic_df.merge(simc_df, left_on='SYM', right_on='SYM')
 merged_df = merged_df[["NAZWA", "CECHA", "NAZWA_1", "NAZWA_2", "WOJ_x","POW_x","GMI_x","RODZ_GMI_x"]]
 merged_df = merged_df.fillna("")
-merged_df["ULICA"] = merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].map(str)
+merged_df["ULICA"] = merged_df["CECHA"].map(str) + " " + merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].map(str)
 
 def get_postal_code(inputStr):
     postalCodeRegex = r"\d{2}-?\d{3}"
@@ -55,7 +55,7 @@ def get_building(inputStr):
 
 def get_city_streets(city:str):
     if "Warszawa" in city:
-        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]
+        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]['ULICA']
     elif "Łódź" in city:
         return merged_df[((merged_df['WOJ_x']==10) & (merged_df['POW_x']==61) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
     elif "Kraków" in city:
@@ -67,7 +67,7 @@ def get_city_streets(city:str):
     else:
         return merged_df[(merged_df['NAZWA']==city)]['ULICA']
 
-def address_parser(ad:str)->List[Address]:
+def address_parser(ad:str) -> List[Address]:
     postal_code = get_postal_code(ad)
     ad_without_postal_code = ad.replace(postal_code, "")
     building = get_building(ad_without_postal_code)
@@ -76,10 +76,15 @@ def address_parser(ad:str)->List[Address]:
     records = []
     for c in cities:
         citystreets = get_city_streets(c.name)
+        if len(citystreets) == 0:
+            citystreets = [str(c.name)]
+
         ad_without_city = ad_without_postal_code.replace(c.name,"")
         streets = get_streets(ad_without_city, citystreets)
         city_records = to_records(ad, c, streets, postal_code, building)
         records.extend(city_records)
+
+    records = sorted(records, key=lambda r: r.score, reverse=True)
 
     validator = PostalCodeValidator()
     records = validator.validate(records)
@@ -102,8 +107,6 @@ def address_parser(ad:str)->List[Address]:
     return records
 
 startTime = time.perf_counter()
-
-# address_parser('3-maja 134')
 
 for i in adresy_dla_studentow:
     address_parser(i)

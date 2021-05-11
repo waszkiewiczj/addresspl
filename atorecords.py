@@ -17,7 +17,5 @@ def to_records(address, city, streets, postal_code, building_number):
         a.score = score
         a.city_score = city.score
         records.append(a)
-    
-    records = sorted(records, key=lambda r: r.score, reverse=True)
 
     return records

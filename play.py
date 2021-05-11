@@ -47,15 +47,15 @@ def get_postal_code(inputStr):
 def get_building(inputStr):
     buildingRegex = r"\d+\w{0,3}\/{0,1}\d*\w{0,3}"
     building = "Not found"
-    match = re.search(buildingRegex, inputStr)
-    if match is not None:
-        building = match.group()
+    match = re.findall(buildingRegex, inputStr)
+    if len(match) > 0:
+        building = match[-1]
 
     return building
 
 def get_city_streets(city:str):
     if "Warszawa" in city:
-        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]
+        return merged_df[(merged_df['RODZ_GMI_x']==8) | (merged_df['NAZWA']==city)]['ULICA']
     elif "Łódź" in city:
         return merged_df[((merged_df['WOJ_x']==10) & (merged_df['POW_x']==61) & (merged_df['RODZ_GMI_x']==9)) | (merged_df['NAZWA']==city)]['ULICA']
     elif "Kraków" in city:
@@ -70,12 +70,15 @@ def get_city_streets(city:str):
 def address_parser(ad:str) -> List[Address]:
     postal_code = get_postal_code(ad)
     ad_without_postal_code = ad.replace(postal_code, "")
-    building = get_building(ad)
+    building = get_building(ad_without_postal_code)
 
     cities = get_cities(ad_without_postal_code, cities_list)
     records = []
     for c in cities:
         citystreets = get_city_streets(c.name)
+        if len(citystreets) == 0:
+            citystreets = [str(c.name)]
+
         ad_without_city = ad_without_postal_code.replace(c.name,"")
         streets = get_streets(ad_without_city, citystreets)
         city_records = to_records(ad, c, streets, postal_code, building)
@@ -104,8 +107,6 @@ def address_parser(ad:str) -> List[Address]:
     return records
 
 startTime = time.perf_counter()
-
-address_parser('ulica Kościuszki 6 73-150 Łobez')
 
 for i in adresy_dla_studentow:
     address_parser(i)

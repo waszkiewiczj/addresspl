@@ -9,6 +9,7 @@ class Address:
     building_number: str
     city: str
     score: float
+    city_score: float
     is_postal_code_matching: bool = True
 
 

@@ -47,9 +47,9 @@ def get_postal_code(inputStr):
 def get_building(inputStr):
     buildingRegex = r"\d+\w{0,3}\/{0,1}\d*\w{0,3}"
     building = "Not found"
-    match = re.search(buildingRegex, inputStr)
-    if match is not None:
-        building = match.group()
+    match = re.findall(buildingRegex, inputStr)
+    if len(match) > 0:
+        building = match[-1]
 
     return building
 
@@ -70,7 +70,7 @@ def get_city_streets(city:str):
 def address_parser(ad:str)->List[Address]:
     postal_code = get_postal_code(ad)
     ad_without_postal_code = ad.replace(postal_code, "")
-    building = get_building(ad)
+    building = get_building(ad_without_postal_code)
 
     cities = get_cities(ad_without_postal_code, cities_list)
     records = []
@@ -106,7 +106,7 @@ def address_parser(ad:str)->List[Address]:
 
 startTime = time.perf_counter()
 
-address_parser('al. Tysiąclecia 22, 26-110')
+# address_parser('3-maja 134')
 
 for i in adresy_dla_studentow:
     address_parser(i)

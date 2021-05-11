@@ -33,7 +33,7 @@ ulic_df = pd.read_csv('data/ULIC_Adresowy_2021-04-06.csv', **csv_reader_kwargs)
 merged_df = ulic_df.merge(simc_df, left_on='SYM', right_on='SYM')
 merged_df = merged_df[["NAZWA", "CECHA", "NAZWA_1", "NAZWA_2", "WOJ_x","POW_x","GMI_x","RODZ_GMI_x"]]
 merged_df = merged_df.fillna("")
-merged_df["ULICA"] = merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].map(str)
+merged_df["ULICA"] = merged_df["CECHA"].map(str) + " " + merged_df["NAZWA_2"].map(str) + " " + merged_df["NAZWA_1"].map(str)
 
 def get_postal_code(inputStr):
     postalCodeRegex = r"\d{2}-?\d{3}"

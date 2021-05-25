@@ -15,14 +15,10 @@ class AddressBuilder:
         pred_address = f'{street.name} {building} {pc} {city}'
         validated_address = self._postal_code_validator.validate(address)
 
-        final_score = fuzz.token_set_ratio(raw_address, pred_address)/100
+        fuzzy_score = fuzz.token_set_ratio(raw_address, pred_address)/100
         postal_score = 1 if validated_address else 0
-        if address.postal_code == 'Not found':
-            postal_score = 0.5
-
-        final_score += postal_score
-        final_score += street.score
-        final_score += city.score
+        if address.postal_code == '':
+            postal_score = city.score
 
         pred = f'{address.street} {address.building_number} {address.postal_code} {address.city.name}'
         raw_letters =  [char for char in raw_address]
@@ -32,9 +28,9 @@ class AddressBuilder:
                 if len(raw_letters) == 0:
                     break
 
-        final_score += (1 - len(raw_letters)/len(raw_address))
-        
-        address.score = round(final_score/5, 4)
+        letter_score = (1 - len(raw_letters)/len(raw_address))
+        score =  (fuzzy_score *1 + postal_score * 1 + street.score * 7 + city.score * 3 + letter_score * 1 ) / 13
+        address.score = round(score, 4)
 
         return validated_address
 

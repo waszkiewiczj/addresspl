@@ -6,6 +6,6 @@ def get_building_number(raw_address: str) -> str:
     building = ""
     match = re.findall(building_regex, raw_address)
     if len(match) > 0:
-        building = match[-1]
+        building = match[-1].strip()
 
     return building

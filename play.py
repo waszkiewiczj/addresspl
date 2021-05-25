@@ -11,8 +11,7 @@ from src.parsing.parsing_controller import ParsingController
 df_test = pd.read_csv('data/adresy_dla_studentow.csv', encoding='UTF-8', header=None,  names=['Address'], delimiter=";")
 adresy_dla_studentow = df_test['Address'].tolist()
 
-def address_parser(ad: str):
-    parsing_controller = ParsingController()
+def address_parser(parsing_controller: ParsingController, ad: str):
     records = parsing_controller.parse_address(ad)
 
     print(ad)
@@ -26,11 +25,12 @@ def address_parser(ad: str):
     return records
 
 startTime = time.perf_counter()
+parsing_controller = ParsingController()
 
-address_parser('al. Tysiąclecia 22, 26-110')
+address_parser(parsing_controller, 'al. Tysiąclecia 22, 26-110')
 
 for i in adresy_dla_studentow:
-    address_parser(i)
+    address_parser(parsing_controller, i)
 
 # results = Parallel(n_jobs=2)(delayed(address_parser)(i) for i in adresy_dla_studentow)
 

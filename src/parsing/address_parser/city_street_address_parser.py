@@ -1,13 +1,12 @@
 import pandas as pd
-from typing import List
 
-from .address_parser import AddressParser
-from ..models.address import Address
-from ..models.city import City
-from ..address_data_provider import AddressDataProvider
-from ..address_builder import AddressBuilder
-from ..get_postal_code import get_postal_code
-from ..get_building_number import get_building_number
+from typing import List
+from src.parsing.address_parser.address_parser import AddressParser
+from src.parsing.models import Address, City, Street
+from src.parsing.address_data_provider import AddressDataProvider
+from src.parsing.address_builder import AddressBuilder
+from src.parsing.get_postal_code import get_postal_code
+from src.parsing.get_building_number import get_building_number
 from fuzzywuzzy import fuzz
 
 
@@ -15,7 +14,6 @@ class CityStreetAddressParser(AddressParser):
     def __init__(self, address_data_provider: AddressDataProvider, address_builder: AddressBuilder) -> None:
         self._address_data_provider = address_data_provider
         self._address_builder = address_builder
-
 
     def parse_address(self, raw_address: str) -> List[Address]:
         postal_code = get_postal_code(raw_address)
@@ -29,7 +27,7 @@ class CityStreetAddressParser(AddressParser):
             ad_without_city = ad_without_postal_code.replace(city.name,"")
             streets = self._get_streets(ad_without_city, citystreets)
             for street in streets:
-                address = self._address_builder.build_address(raw_address, city, street['name'], postal_code, building)
+                address = self._address_builder.build_address(raw_address, city, street, postal_code, building)
                 records.append(address)
         
         return records
@@ -49,7 +47,8 @@ class CityStreetAddressParser(AddressParser):
         else:
             return streets_data[(streets_data['NAZWA']==city)]['ULICA']
 
-    def _get_cities(self, address: str, cities: List[str])-> List[City]:
+    @staticmethod
+    def _get_cities(address: str, cities: List[str])-> List[City]:
         N_MAX = 5
         result = []
 
@@ -60,26 +59,29 @@ class CityStreetAddressParser(AddressParser):
         result_sorted = sorted(result_by_len, key=lambda city: city.score,reverse=True)
         return result_sorted[:N_MAX]
 
-    def _get_streets(self, address:str, streets, n:int=5):
+    def _get_streets(self, address:str, streets, n:int=5) -> Street:
         scores = self._get_scores(address, streets)
 
         sorted_scores = self._sort_scores(scores)
         return sorted_scores[:n]
 
-    def _get_scores(self, address, streets):
+    @staticmethod
+    def _get_scores(address, streets):
         scores = []
 
         for street in streets:
+            street = street.strip()
             if street in address:
-                scores.append({'score': 1, 'name': street})
+                scores.append(Street(name=street, score=1))
                 continue
 
             r = fuzz.token_set_ratio(address, street) / 100
-            scores.append({'score': r, 'name': street})
+            scores.append(Street(name=street, score=r))
         return scores
 
-    def _sort_scores(self, scores):
-        sortedLen = sorted(scores, key=lambda score: len(score['name']), reverse=True)
-        sortedR = sorted(sortedLen, key=lambda score: score['score'], reverse=True)
+    @staticmethod
+    def _sort_scores(scores):
+        sortedLen = sorted(scores, key=lambda score: len(score.name), reverse=True)
+        sortedR = sorted(sortedLen, key=lambda score: score.score, reverse=True)
 
         return sortedR

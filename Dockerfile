@@ -1,22 +1,17 @@
-FROM python:3.7-slim-buster
-
+FROM python:3.7-slim-buster as base
 WORKDIR /app
-
-RUN apt update && apt install -y build-essential
-
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt --no-cache-dir
-
-COPY . .
-
 ENV PYTHONPATH=/app
+COPY requirements.txt .
+RUN pip install -r requirements.txt --no-cache-dir
+COPY data data
+COPY src src
 
-ENV DATA="data/db.csv"
-ENV TREE="data/tree.ann"
+FROM base as test
+COPY test test
+RUN pytest test
 
+FROM base as serving
+RUN useradd -M server
+USER server
 EXPOSE 80
-
-CMD python3 app.py \
-    --data $DATA \
-    --tree $TREE
+CMD python src

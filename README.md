@@ -51,4 +51,4 @@ For instance, given `ul. Kościuszku 12 Słubice` it returns:
 
 Application is available as web service in docker container with 80 port exposed.
 
-see: https://hub.docker.com/repository/docker/waszkiewiczj/addressp
+see: https://hub.docker.com/repository/docker/waszkiewiczj/addresspl

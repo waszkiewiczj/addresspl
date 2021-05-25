@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import List
 
+
 class AddressDataProvider:
     def __init__(self, config) -> None:
         self._config = config

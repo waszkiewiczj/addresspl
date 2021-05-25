@@ -12,5 +12,5 @@ class Address:
     street: Street
     building_number: str
     city: City
+    score: float = 0
     is_postal_code_matching: bool = True
-    score: float

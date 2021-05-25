@@ -12,5 +12,5 @@ class Address:
     street: Street
     building_number: str
     city: City
-    errors: List[str] = field(default_factory=lambda: [])
     is_postal_code_matching: bool = True
+    score: float

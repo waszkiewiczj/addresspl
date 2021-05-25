@@ -4,7 +4,6 @@ from src.parsing.models import Address
 
 
 class PostalCodeValidator:
-    INVALID_POSTAL_ERROR = "postal code and city do not match"
 
     def __init__(
             self,
@@ -27,8 +26,5 @@ class PostalCodeValidator:
 
     def validate(self, address: Address) -> Address:
         address.is_postal_code_matching = self.is_valid(address)
-        if not address.is_postal_code_matching:
-            error_msg = "Postal code doesnt match" if address.postal_code else "Postal code not found"
-            address.errors.append(error_msg)
 
         return address

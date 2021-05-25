@@ -70,6 +70,7 @@ class CityStreetAddressParser(AddressParser):
         scores = []
 
         for street in streets:
+            street = street.strip()
             if street in address:
                 scores.append(Street(name=street, score=1))
                 continue

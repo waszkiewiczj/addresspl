@@ -32,7 +32,7 @@ class CityStreetAddressParser(AddressParser):
                 address = self._address_builder.build_address(raw_address, city, street['name'], postal_code, building)
                 records.append(address)
         
-        return sorted(records, key=lambda r: r.score, reverse=True)[:3]
+        return records
 
     def _get_city_streets(self, city: str) -> pd.DataFrame:
         streets_data = self._address_data_provider.get_streets_data()

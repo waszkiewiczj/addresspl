@@ -6,12 +6,19 @@ class AddressDataProvider:
         self._config = config
         self._create_streets_data()
         self._create_cities_data()
+        self._create_pna_data()
 
     def get_cities_data(self) -> List[str]:
         return self._cities_data
     
     def get_streets_data(self) -> pd.DataFrame:
         return self._streets_data
+
+    def get_pna_data(self) -> pd.DataFrame:
+        return self._pna_data
+
+    def _create_pna_data(self):
+        self._pna_data = pd.read_csv(self._config['pna_path'], encoding='UTF-8')[["PNA", "MIEJSCOWOŚĆ", "ULICA"]]
 
     def _create_cities_data(self):
         cities_df = pd.read_csv(self._config['cities_path'], encoding='UTF-8')

@@ -46,6 +46,4 @@ class PostalStreetAddressParser(AddressParser):
 
     def _get_matching_streets(self, pna_data: pd.DataFrame, postal_code: str) -> pd.DataFrame:
         matching_streets = pna_data[(pna_data['PNA'] == postal_code)]
-        matching_streets_copy = matching_streets.copy(deep=True)
-        matching_streets_copy['ULICA'] = matching_streets.apply(lambda x: x['ULICA'] if type(x['ULICA']) != float else x['MIEJSCOWOŚĆ'], axis = 1)
-        return matching_streets_copy
+        return matching_streets.loc[matching_streets['ULICA'].str.len() > 0]

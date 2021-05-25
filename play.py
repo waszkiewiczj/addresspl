@@ -24,6 +24,8 @@ def address_parser(parsing_controller: ParsingController, ad: str):
 startTime = time.perf_counter()
 parsing_controller = ParsingController()
 
+address_parser(parsing_controller, 'Chobrzany 111, 27-650')
+
 for i in adresy_dla_studentow:
     address_parser(parsing_controller, i)
 

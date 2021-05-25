@@ -1,13 +1,11 @@
 from typing import List
 
-from .config import config
-from .address_data_provider import AddressDataProvider
-from .postal_code_validator import PostalCodeValidator
-from .address_builder import AddressBuilder
-from .address_parser.city_street_address_parser import CityStreetAddressParser
-from .models.address import Address
-from .address_parser.address_parser import AddressParser
-
+from src.parsing.config import config
+from src.parsing.address_data_provider import AddressDataProvider
+from src.parsing.postal_code_validator import PostalCodeValidator
+from src.parsing.address_builder import AddressBuilder
+from src.parsing.address_parser import CityStreetAddressParser
+from src.parsing.models import Address
 
 
 class ParsingController:
@@ -19,4 +17,3 @@ class ParsingController:
 
     def parse_address(self, raw_address: str) -> List[Address]:
         return self._address_parser.parse_address(raw_address)
-

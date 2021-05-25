@@ -1,12 +1,12 @@
 import pytest
 
-from validatepostalcode import PostalCodeValidator
-from models import Address
+from src.parsing.postal_code_validator import PostalCodeValidator
+from src.parsing.models import Address, City
 
 
 def get_validator() -> PostalCodeValidator:
     return PostalCodeValidator(
-        postal_code_csv="postal_code_validator_data.csv",
+        config={'postal_code_path': 'test/postal_code_validator_data.csv'},
         city_column_name="city",
         postal_code_column_name="postal_code",
     )
@@ -22,7 +22,8 @@ class TestPostalCodeValidator:
     ])
     def test_valid_code(self, city, postal_code):
         validator = get_validator()
-        valid_address = Address(postal_code, "StreetName", "1", city, 1)
+        city = City(city, 1)
+        valid_address = Address(postal_code, "StreetName", "1", city)
 
         is_valid = validator.is_valid(valid_address)
 
@@ -36,7 +37,8 @@ class TestPostalCodeValidator:
     ])
     def test_invalid_code(self, city, postal_code):
         validator = get_validator()
-        invalid_address = Address(postal_code, "StreetName", "1", city, 1)
+        city = City(city, 1)
+        invalid_address = Address(postal_code, "StreetName", "1", city)
 
         is_valid = validator.is_valid(invalid_address)
 
@@ -46,21 +48,11 @@ class TestPostalCodeValidator:
         ["City1", "00-001", True],
         ["City7", "00-001", False],
     ])
-    def test_validate_single(self, city, postal_code, is_valid):
+    def test_validate(self, city, postal_code, is_valid):
         validator = get_validator()
-        address = Address(postal_code, "StreetName", "1", city, 1)
+        city = City(city, 1)
+        address = Address(postal_code, "StreetName", "1", city)
 
-        validated_address = validator.validate_single(address)
+        validated_address = validator.validate(address)
 
         assert validated_address.is_postal_code_matching == is_valid
-
-    def test_validate(self):
-        validator = get_validator()
-        valid_address = Address("00-001", "StreetName", "1", "City1", 1)
-        invalid_address = Address("00-007", "StreetName", "1", "City1", 1)
-        addresses = [valid_address, invalid_address]
-
-        validated_addresses = validator.validate(addresses)
-
-        assert validated_addresses[0].is_postal_code_matching
-        assert not validated_addresses[1].is_postal_code_matching

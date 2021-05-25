@@ -1,9 +1,8 @@
-from .postal_code_validator import PostalCodeValidator
-from .models.address import Address
-from .models.city import City
-from .models.street import Street
+from src.parsing.postal_code_validator import PostalCodeValidator
+from src.parsing.models import Address, City, Street
 
 from fuzzywuzzy import fuzz
+
 
 class AddressBuilder:
     def __init__(self, postal_code_validator: PostalCodeValidator) -> None:

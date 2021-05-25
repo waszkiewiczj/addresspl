@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import List
 
 class AddressDataProvider:
     def __init__(self, config) -> None:
@@ -6,7 +7,7 @@ class AddressDataProvider:
         self._create_streets_data()
         self._create_cities_data()
 
-    def get_cities_data(self) -> list[str]:
+    def get_cities_data(self) -> List[str]:
         return self._cities_data
     
     def get_streets_data(self) -> pd.DataFrame:

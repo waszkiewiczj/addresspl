@@ -10,38 +10,28 @@ For instance, given `ul. Kościuszku 12 Słubice` it returns:
 [
   {
     "postal_code": "",
-    "street": " Kościuszki",
+    "street": {"name": "Kościuszki", "score": 0.69},
     "building_number": "12",
-    "city": {
-      "name": "Słubice",
-      "score": 1
-    },
-    "errors": ["Postal code not found"],
-    "is_postal_code_matching": false
-
-  },
-
-  {
-    "postal_code": "",
-    "street": "Mieszka I",
-    "building_number": "12",
-    "city": {
-      "name": "Słubice",
-      "score": 1
-    },
-    "errors": ["Postal code not found"],
+    "city": {"name": "Słubice", "score": 1},
+    "score": 0.7985,
     "is_postal_code_matching": false
   },
 
   {
     "postal_code": "",
-    "street": " Konstytucji 3 Maja",
+    "street": {"name": "Mieszka I", "score": 0.4},
     "building_number": "12",
-    "city": {
-      "name": "Słubice",
-      "score": 1
-    },
-    "errors": ["Postal code not found"],
+    "city": {"name": "Słubice", "score": 1},
+    "score": 0.6269,
+    "is_postal_code_matching": false
+  },
+
+  {
+    "postal_code": "",
+    "street": {"name": "Konstytucji 3 Maja", "score": 0.35},
+    "building_number": "12",
+    "city": {"name": "Słubice", "score": 1},
+    "score": 0.6,
     "is_postal_code_matching": false
   }
 ]

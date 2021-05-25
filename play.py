@@ -18,7 +18,7 @@ def address_parser(parsing_controller: ParsingController, ad: str):
     print('#####')
     for i, r in enumerate(records):
         if i < 3:            
-            print(f"score: {r.score} - {r.street} {r.building_number} {r.postal_code} {r.city.name}. errors: {' '.join(r.errors)}")
+            print(f"score: {r.score} - {r.street.name} {r.building_number} {r.postal_code} {r.city.name}. errors: {' '.join(r.errors)}")
         else:
             break
     print("##### \n")

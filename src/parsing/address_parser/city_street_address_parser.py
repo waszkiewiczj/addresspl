@@ -1,8 +1,10 @@
 import pandas as pd
 from typing import List
 
+
 from .address_parser import AddressParser
 from ..models.address import Address
+from ..models.street import Street
 from ..models.city import City
 from ..address_data_provider import AddressDataProvider
 from ..address_builder import AddressBuilder
@@ -29,7 +31,7 @@ class CityStreetAddressParser(AddressParser):
             ad_without_city = ad_without_postal_code.replace(city.name,"")
             streets = self._get_streets(ad_without_city, citystreets)
             for street in streets:
-                address = self._address_builder.build_address(raw_address, city, street['name'], postal_code, building)
+                address = self._address_builder.build_address(raw_address, city, street, postal_code, building)
                 records.append(address)
         
         return sorted(records, key=lambda r: r.score, reverse=True)[:3]
@@ -60,7 +62,7 @@ class CityStreetAddressParser(AddressParser):
         result_sorted = sorted(result_by_len, key=lambda city: city.score,reverse=True)
         return result_sorted[:N_MAX]
 
-    def _get_streets(self, address:str, streets, n:int=5):
+    def _get_streets(self, address:str, streets, n:int=5) -> Street:
         scores = self._get_scores(address, streets)
 
         sorted_scores = self._sort_scores(scores)
@@ -71,15 +73,15 @@ class CityStreetAddressParser(AddressParser):
 
         for street in streets:
             if street in address:
-                scores.append({'score': 1, 'name': street})
+                scores.append(Street(name=street, score=1))
                 continue
 
             r = fuzz.token_set_ratio(address, street) / 100
-            scores.append({'score': r, 'name': street})
+            scores.append(Street(name=street, score=r))
         return scores
 
     def _sort_scores(self, scores):
-        sortedLen = sorted(scores, key=lambda score: len(score['name']), reverse=True)
-        sortedR = sorted(sortedLen, key=lambda score: score['score'], reverse=True)
+        sortedLen = sorted(scores, key=lambda score: len(score.name), reverse=True)
+        sortedR = sorted(sortedLen, key=lambda score: score.score, reverse=True)
 
         return sortedR

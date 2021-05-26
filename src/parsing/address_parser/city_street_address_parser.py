@@ -1,13 +1,11 @@
-import pandas as pd
-
 from typing import List
+from fuzzywuzzy import fuzz
+
 from src.parsing.address_parser.address_parser import AddressParser
-from src.parsing.models import Address, City, Street
+from src.parsing.models import Address, City
 from src.parsing.address_data_provider import AddressDataProvider
 from src.parsing.address_builder import AddressBuilder
-from src.parsing.get_postal_code import get_postal_code
-from src.parsing.get_building_number import get_building_number
-from fuzzywuzzy import fuzz
+from src.parsing.address_parser.address_parser_utils import get_postal_code, get_streets_from_streets_data, get_building_number
 
 
 class CityStreetAddressParser(AddressParser):
@@ -23,29 +21,12 @@ class CityStreetAddressParser(AddressParser):
         cities = self._get_cities(ad_without_postal_code, cities_data)
         records = []
         for city in cities:
-            citystreets = self._get_city_streets(city.name)
-            ad_without_city = ad_without_postal_code.replace(city.name,"")
-            streets = self._get_streets(ad_without_city, citystreets)
+            streets = get_streets_from_streets_data(ad_without_postal_code, city, self._address_data_provider)
             for street in streets:
                 address = self._address_builder.build_address(raw_address, city, street, postal_code, building)
                 records.append(address)
         
         return records
-
-    def _get_city_streets(self, city: str) -> pd.DataFrame:
-        streets_data = self._address_data_provider.get_streets_data()
-        if "Warszawa" in city:
-            return streets_data[(streets_data['RODZ_GMI_x']==8) | (streets_data['NAZWA']==city)]['ULICA']
-        elif "Łódź" in city:
-            return streets_data[((streets_data['WOJ_x']==10) & (streets_data['POW_x']==61) & (streets_data['RODZ_GMI_x']==9)) | (streets_data['NAZWA']==city)]['ULICA']
-        elif "Kraków" in city:
-            return streets_data[((streets_data['WOJ_x']==12) & (streets_data['POW_x']==61) & (streets_data['RODZ_GMI_x']==9)) | (streets_data['NAZWA']==city)]['ULICA']
-        elif "Poznań" in city:
-            return streets_data[((streets_data['WOJ_x']==30) & (streets_data['POW_x']==64) & (streets_data['RODZ_GMI_x']==9)) | (streets_data['NAZWA']==city)]['ULICA']
-        elif "Wrocław" in city:
-            return streets_data[((streets_data['WOJ_x']==2) & (streets_data['POW_x']==64) & (streets_data['RODZ_GMI_x']==9)) | (streets_data['NAZWA']==city)]['ULICA']
-        else:
-            return streets_data[(streets_data['NAZWA']==city)]['ULICA']
 
     @staticmethod
     def _get_cities(address: str, cities: List[str])-> List[City]:
@@ -53,35 +34,8 @@ class CityStreetAddressParser(AddressParser):
         result = []
 
         for city in cities:
-            score = 1 if city in address else fuzz.token_set_ratio(address, city) / 100
+            score = 1 if city in address else fuzz.token_sort_ratio(address, city) / 100
             result.append(City(name=city, score=score))
         result_by_len = sorted(result, key=lambda city: len(city.name),reverse=True)
         result_sorted = sorted(result_by_len, key=lambda city: city.score,reverse=True)
         return result_sorted[:N_MAX]
-
-    def _get_streets(self, address:str, streets, n:int=5) -> Street:
-        scores = self._get_scores(address, streets)
-
-        sorted_scores = self._sort_scores(scores)
-        return sorted_scores[:n]
-
-    @staticmethod
-    def _get_scores(address, streets):
-        scores = []
-
-        for street in streets:
-            street = street.strip()
-            if street in address:
-                scores.append(Street(name=street, score=1))
-                continue
-
-            r = fuzz.token_set_ratio(address, street) / 100
-            scores.append(Street(name=street, score=r))
-        return scores
-
-    @staticmethod
-    def _sort_scores(scores):
-        sortedLen = sorted(scores, key=lambda score: len(score.name), reverse=True)
-        sortedR = sorted(sortedLen, key=lambda score: score.score, reverse=True)
-
-        return sortedR

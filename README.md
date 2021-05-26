@@ -42,3 +42,15 @@ For instance, given `ul. Kościuszku 12 Słubice` it returns:
 Application is available as web service in docker container with 80 port exposed.
 
 see: https://hub.docker.com/repository/docker/waszkiewiczj/addresspl
+
+### Postal codes CSV
+
+To make web service working, CSV file with postal codes is required with header:
+```csv
+PNA,MIEJSCOWOŚĆ,ULICA,NUMERY,GMINA,POWIAT,WOJEWÓDZTWO
+```
+
+File should be located in `data\pna.csv`. When run from docker container it can be simply mounted from host fs:
+```shell script
+docker run -d -p 80:80 -v data/pna.csv:/app/data/pna.csv:ro waszkiewiczj/addresspl
+```

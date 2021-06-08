@@ -10,7 +10,7 @@ from ..models.street import Street
 from ..models.city import City
 
 def get_postal_code(raw_address: str) -> str:
-    postal_code_regex = r"\d{2}-?\d{3}"
+    postal_code_regex = r"\b\d{2}-?\d{3}"
     postal_code = ""
     match = re.search(postal_code_regex, raw_address)
     if match is not None:

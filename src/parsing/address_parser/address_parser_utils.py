@@ -19,11 +19,13 @@ def get_postal_code(raw_address: str) -> str:
     return postal_code
 
 def get_building_number(raw_address: str) -> str: 
-    building_regex = r"\d+\w{0,3}\/{0,1}\d*\w{0,3}"
+    # building_regex = r"\d+\w{0,3}\/{0,1}\d*\w{0,3}"
+    # building_regex = r"(\d+\w{0,3}((\/|-)?\d*(\/|-)?\d*\s?\w{0,3}(\s|$))?)"
+    building_regex = r"(\d+\w{0,3}((\/|-)?\d*\s?(\/|-|l|l\.|lok|lok\.|lokal|m|m\.|mieszkania)?\s?\d*\s?\w{0,3}(\s|$))?)"
     building = ""
     match = re.findall(building_regex, raw_address)
     if len(match) > 0:
-        building = match[-1].strip()
+        building = match[-1][0].strip()
 
     return building
 
